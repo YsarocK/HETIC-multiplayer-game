@@ -1,3 +1,11 @@
-dist
 node_modules
-.vscode
+/lib
+
+# *.test.ts
+
+.nyc_output
+coverage
+
+build
+
+.env

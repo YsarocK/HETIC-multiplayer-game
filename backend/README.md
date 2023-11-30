@@ -1,35 +1,13 @@
-# Fastify & Typescript App
+<p>
+<img src="socketio.png" width="120" alt="Nest Logo" />
+</p>
 
-> Fastify & TypeScript starter repository.
+<p>
 
-## Installation
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c23b48873d0e4a5eb60c198c62776921)](https://app.codacy.com/gh/ahsanaasim/boiled-socket.io/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-```bash
-$ git clone https://github.com/Matschik/fastify-typescript-starter.git
-$ cd fastify-typescript-starter
-$ npm run install
-```
+</p>
 
-## Usage
+## Socket.IO Boilerplate
 
-### Development
-```bash
-# Required: typescript watch compilation
-$ npm run watch
-
-# Required: development server with hot reload (nodemon)
-$ npm run dev
-
-# Format with prettier
-$ npm run format
-```
-
-### Production
-
-```bash
-# build for production
-$ npm run build
-
-# start production app
-$ npm run start
-```
+A boilerplate of Socket.IO in Typescript

@@ -1,5 +1,5 @@
 <template>
   <div>
-    <h1>RoomManager</h1>
+    <h1>Room</h1>
   </div>
 </template>
