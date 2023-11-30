@@ -10,9 +10,7 @@ const PORT = process.env.SOCKET_PORT || 3000;
 
 const app: Express = express();
 
-app.use(cors({
-  origin: process.env.FRONT_URL
-}))
+app.use(cors({ origin: '*' }))
 
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: `Socket server listening on port ${PORT}` });
@@ -20,14 +18,23 @@ app.get('/', (req: Request, res: Response) => {
 
 const httpServer = createServer(app);
 
-const socket = new Server(httpServer, {
+const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONT_URL,
+    origin: /* process.env.FRONT_URL */'*',
   }
 })
 
 httpServer.listen(PORT);
 
-socket.on('new_user', () => {
-  console.log('a user connected');
-})
+io.on('connection', (socket) => {
+  console.log('user connected');
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  })
+
+  socket.on('new_user', () => {
+    io.emit('new_user', 'Hello new user ' + socket.id);
+    console.log('new user message');
+  })
+});

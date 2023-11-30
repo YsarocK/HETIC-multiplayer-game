@@ -8,9 +8,11 @@ const useSocket = () => {
   const emit = (event: string, data: any) => {
     socket.emit(event, data);
   };
+
   const on = (event: string, callback: (data: any) => void) => {
     socket.on(event, callback);
   };
+  
   return {
     emit,
     on,
