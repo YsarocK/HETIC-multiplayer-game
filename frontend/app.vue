@@ -9,8 +9,8 @@
 const socket = useSocket()
 
 const emit = () => {
-  socket.on('new_user', () => {
-    console.log('connected')
+  socket.on('new_user', (message) => {
+    console.log('new user' + message)
   })
 
   socket.emit('new_user', 'room1')
