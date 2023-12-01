@@ -1,7 +1,6 @@
 import { Vector2 } from "./vector2.js";
 
 export function Ball(options, socket) {
-
   this.position = [50, 50]
   this.radius = 10;
   this.speed = 250;
@@ -14,6 +13,11 @@ export function Ball(options, socket) {
     this.ballPositionInGame = position;
   })
 
+  socket.on("switchPlayerIndex", async (players) => {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    this.player = document.querySelector('#playerNumber').innerHTML
+  })
+
   let dir = Vector2.normalize([1, 2]);
 
   const randomHorReflect = (d, mult) => {
@@ -21,6 +25,7 @@ export function Ball(options, socket) {
   }
 
   this.update = (delta) => {
+    if(this.player == 2) return
 
     this.position = Vector2.add(this.position, Vector2.multiply(dir,this.speed * delta));
 
@@ -40,10 +45,12 @@ export function Ball(options, socket) {
       dir = randomHorReflect(dir, 1);
     } 
     else if (this.position[0] + this.radius < 0) {
+      console.log('hit left')
       // Hit left
       options.onEscape({ winner: 'right', loser: 'left'})
       
     } else if (this.position[0] + this.radius > options.width) {
+      console.log('hit right')
       // Hit right
       options.onEscape({ winner: 'left', loser: 'right'})
 

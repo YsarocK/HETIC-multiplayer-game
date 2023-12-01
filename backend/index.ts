@@ -106,6 +106,11 @@ io.on('connection', (socket) => {
   socket.on('ball_position', (position) => {
     io.emit('ball_position', position)
   })
+
+  socket.on('game_end', (m) => {
+    console.log('endgame', m)
+    io.emit('game_end', m)
+  })
 });
 
 httpServer.listen(PORT);

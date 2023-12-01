@@ -10,6 +10,5 @@ export function Text(options) {
     options.ctx.textAlign = "center";
     options.ctx.font = "30px Arial";
     options.ctx.fillText(options.text, this.position[0], this.position[1]);
-
   }
 } 
