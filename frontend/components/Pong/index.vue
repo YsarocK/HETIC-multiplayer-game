@@ -2,8 +2,6 @@
 import { onMounted, ref } from 'vue'
 import { Pong } from './Pong';
 
-const socket = useSocket()
-
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 
 onMounted(() => {

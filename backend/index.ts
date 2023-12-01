@@ -5,6 +5,7 @@ import { config as DotEnvConfig } from 'dotenv'
 import cors from 'cors'
 
 import type { Game } from '../frontend/types/game'
+import {h} from "../frontend/.nuxt/imports";
 
 DotEnvConfig()
 
@@ -22,7 +23,7 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: /* process.env.FRONT_URL */'*',
+    origin: '*',
   }
 })
 
@@ -34,9 +35,21 @@ const pong: Game = {
 }
 
 io.on('connection', (socket) => {
-  console.log('user connected');
+  console.log(`user ${socket.id} connected`);
+  console.log('One user has been ceatedxllllll')
 
-  socket.emit('id', socket.id);
+  if(pong.players.length === 2) {
+    pong.players = [
+      pong.players[1],
+      {
+        id: socket.id,
+        position: {
+          x: 0,
+          y: 0,
+        }
+      }
+    ];
+  }
 
   if(pong.players.length < 2) {
     pong.players.push({
@@ -46,26 +59,16 @@ io.on('connection', (socket) => {
         y: 0,
       }
     })
-
-    io.emit('game', pong);
-  }
-
-  if(pong.players.length === 2) {
-    pong.state = 'playing';
-    io.emit('game', pong);
-  }
-
-  if(pong.players.length < 2) {
     pong.state = 'waiting';
-    io.emit('game', pong);
   }
+
+  io.emit('game', pong);
 
   socket.on('disconnect', () => {
     console.log('user disconnected');
   })
 
-  socket.on('new_user', () => {
-    io.emit('new_user', 'Hello new user ' + socket.id);
-    console.log('new user message');
+  socket.on('pong', () => {
+    io.emit('game', pong);
   })
 });
