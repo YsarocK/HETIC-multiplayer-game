@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Pong } from './Pong';
+import { Pong } from './pong';
 
 const canvasRef = ref<HTMLCanvasElement | null>(null)
 

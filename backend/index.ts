@@ -5,7 +5,6 @@ import { config as DotEnvConfig } from 'dotenv'
 import cors from 'cors'
 
 import type { Game } from '../frontend/types/game'
-import {h} from "../frontend/.nuxt/imports";
 
 DotEnvConfig()
 
@@ -26,9 +25,6 @@ const io = new Server(httpServer, {
     origin: '*',
   }
 })
-
-httpServer.listen(PORT);
-
 const pong: Game = {
   players: [],
   state: 'waiting',
@@ -36,7 +32,6 @@ const pong: Game = {
 
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected`);
-  console.log('One user has been ceatedxllllll')
 
   if(pong.players.length === 2) {
     pong.players = [
@@ -72,3 +67,5 @@ io.on('connection', (socket) => {
     io.emit('game', pong);
   })
 });
+
+httpServer.listen(PORT);
