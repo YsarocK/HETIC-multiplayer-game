@@ -2,6 +2,39 @@ import { Paddle } from "./paddle.js";
 import { Ball } from "./ball.js";
 import { Text } from "./text.js";
 
+const socket = io('localhost:3001');
+
+console.log('coonnect')
+
+// Game content
+let game = undefined;
+
+// Socket player ID
+let id = undefined;
+
+// Player 1 (left) or 2 (right)
+let player = undefined;
+
+socket.on('connect', () => {
+  console.log('debug')
+  id = socket.id;
+});
+
+socket.on('game', (pong) => {
+  if(player === undefined) {
+    player = id === pong.players[0].id ? 1 : 2;
+    document.querySelector('#playerNumber').innerHTML = player;
+    document.querySelector('#playerId').innerHTML = id;
+  }
+})
+
+socket.on('switchPlayerIndex', (players) => {
+  const index = players.findIndex(player => player.id === id);
+  if(index === -1) return
+
+  document.querySelector('#playerNumber').innerHTML = players.findIndex(player => player.id === id) + 1;
+})
+
 
 export function Pong(canvas, socket) {
   const ctx = canvas.getContext("2d");
@@ -15,8 +48,9 @@ export function Pong(canvas, socket) {
     ctx,
     down: "s",
     up: "z",
-    height: canvas.height
-  });
+    height: canvas.height,
+    player: 1
+  }, socket);
   paddleLeft.position[0] = 0;
 
   // Right paddle
@@ -24,9 +58,27 @@ export function Pong(canvas, socket) {
     ctx,
     down: "ArrowDown",
     up: "ArrowUp",
-    height: canvas.height
-  });
+    height: canvas.height,
+    player: 2
+  }, socket);
   paddleRight.position[0] = 580;
+
+  socket.on('p1_move', (direction) => {
+    console.log(direction)
+    if(paddleLeft) paddleLeft.move(direction)
+  })
+
+  socket.on('p1_stop', () => {
+    if(paddleLeft) paddleLeft.stop()
+  })
+
+  socket.on('p2_move', (direction) => {
+    if(paddleRight) paddleRight.move(direction)
+  })
+
+  socket.on('p2_stop', () => {
+    if(paddleRight) paddleRight.stop()
+  })
 
   // The ball
   function createBall() {
@@ -49,7 +101,8 @@ export function Pong(canvas, socket) {
         }
   
       }
-    });
+    },
+        socket, player);
     ball.position = [ canvas.width / 2.0, canvas.height / 2.0 ];
   
   }
@@ -97,3 +150,13 @@ export function Pong(canvas, socket) {
   requestAnimationFrame(loop)
 
 }
+
+// const pong = setTimeout(() => new Pong(document.getElementById('elcanva'), socket), 500)
+
+socket.on('startgame', () => {
+  new Pong(document.getElementById('elcanva'), socket)
+})
+
+document.querySelector('#startgame').addEventListener('click', () => {
+    socket.emit('startGame')
+})

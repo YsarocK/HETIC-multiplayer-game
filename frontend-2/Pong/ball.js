@@ -1,10 +1,18 @@
 import { Vector2 } from "./vector2.js";
 
-export function Ball(options) {
+export function Ball(options, socket) {
 
   this.position = [50, 50]
   this.radius = 10;
   this.speed = 250;
+
+  this.player = document.querySelector('#playerNumber').innerHTML
+
+  this.ballPositionInGame = this.position;
+
+  socket.on('ball_position', (position) => {
+    this.ballPositionInGame = position;
+  })
 
   let dir = Vector2.normalize([1, 2]);
 
@@ -12,9 +20,8 @@ export function Ball(options) {
     return Vector2.normalize([-d[0] + Math.random() * 0.5 * mult, d[1] + (Math.random() * 0.5)]);
   }
 
-
   this.update = (delta) => {
-    
+
     this.position = Vector2.add(this.position, Vector2.multiply(dir,this.speed * delta));
 
     // Right paddle
@@ -47,12 +54,18 @@ export function Ball(options) {
       // Hit bottom
       dir = [dir[0], -dir[1]]
     }
-  }
 
+    if(this.player == 1) {
+      socket.emit('ball_position', this.position)
+    }
+
+  }
   this.draw = () => {
+    const position = this.ballPositionInGame;
     options.ctx.fillStyle = "#000000";
     options.ctx.beginPath();
-    options.ctx.arc(this.position[0], this.position[1], this.radius, 0, 2 * Math.PI);
+    options.ctx.arc(position[0], position[1], this.radius, 0, 2 * Math.PI);
     options.ctx.fill();
+
   }
 } 

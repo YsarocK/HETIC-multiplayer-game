@@ -1,4 +1,4 @@
-export function Paddle(options) {
+export function Paddle(options, socket) {
 
   this.position = [0, 0];
   
@@ -10,20 +10,37 @@ export function Paddle(options) {
   const unitsPerSecond = 250;
 
   addEventListener('keydown', (event) => {
-    if (event.key === options.down) {
-      this.speed = unitsPerSecond;
-    } else if (event.key === options.up) {
-      this.speed = -unitsPerSecond;
+    const playerNumber = document.querySelector('#playerNumber').innerHTML;
+    if(playerNumber !== options.player.toString()) return
+
+    const res = () => {
+      if (event.key === options.down) {
+        return unitsPerSecond;
+      }
+
+      if (event.key === options.up) {
+        return -unitsPerSecond;
+      }
     }
+
+
+    socket.emit(`p${playerNumber}_move`, res())
   });
 
   addEventListener('keyup', (event) => {
-    if (event.key === options.down) {
-      this.speed = 0;
-    } else if (event.key === options.up) {
-      this.speed = 0;
-    }
+    const playerNumber = document.querySelector('#playerNumber').innerHTML;
+    if(playerNumber !== options.player.toString()) return
+
+    socket.emit(`p${playerNumber}_stop`)
   })
+
+  this.move = (direction) => {
+    this.speed = direction;
+  }
+
+  this.stop = () => {
+    this.speed = 0;
+  }
   
   this.update = (delta) => {
     this.position[1] = this.position[1] + this.speed * delta;

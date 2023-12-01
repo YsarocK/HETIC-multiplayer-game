@@ -4,8 +4,6 @@ import { Server } from "socket.io";
 import { config as DotEnvConfig } from 'dotenv'
 import cors from 'cors'
 
-import type { Game } from '../frontend/types/game'
-
 DotEnvConfig()
 
 const PORT = process.env.SOCKET_PORT || 3000;
@@ -18,6 +16,19 @@ app.get('/', (req: Request, res: Response) => {
   res.json({ message: `Socket server listening on port ${PORT}` });
 });
 
+interface Player {
+  id: string;
+  position: {
+    x: number;
+    y: number;
+  }
+}
+
+interface Game {
+  players: Player[];
+  state: 'waiting' | 'playing';
+}
+
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
@@ -25,6 +36,7 @@ const io = new Server(httpServer, {
     origin: '*',
   }
 })
+
 const pong: Game = {
   players: [],
   state: 'waiting',
@@ -44,6 +56,8 @@ io.on('connection', (socket) => {
         }
       }
     ];
+
+    io.emit('switchPlayerIndex', pong.players);
   }
 
   if(pong.players.length < 2) {
@@ -59,12 +73,38 @@ io.on('connection', (socket) => {
 
   io.emit('game', pong);
 
+  socket.on('startGame', () => {
+    pong.state = 'playing';
+    io.emit('startgame');
+    io.emit('game', pong)
+  });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   })
 
   socket.on('pong', () => {
     io.emit('game', pong);
+  })
+
+  socket.on('p1_move', (direction) => {
+    io.emit('p1_move', direction)
+  })
+
+  socket.on('p1_stop', () => {
+    io.emit('p1_stop')
+  })
+
+  socket.on('p2_move', (direction) => {
+    io.emit('p2_move', direction)
+  })
+
+  socket.on('p2_stop', () => {
+    io.emit('p2_stop')
+  })
+
+  socket.on('ball_position', (position) => {
+    io.emit('ball_position', position)
   })
 });
 
