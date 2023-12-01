@@ -14,6 +14,7 @@ const useSocket = () => {
   };
   
   return {
+    id: socket.id,
     emit,
     on,
   };
